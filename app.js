@@ -65,6 +65,7 @@ function updateModeControls() {
 }
 
 async function createRoom() {
+    toast("已按下建立房間");
   const name = getName();
   if (!name) return toast("先幫自己取個暱稱吧！");
   const mode = $("quizMode").value;
