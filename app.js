@@ -46,10 +46,45 @@ function getName() {
   return $("playerName").value.trim().slice(0, 16);
 }
 
+function selectedAnimeIds() {
+  return [...$("animePicker").selectedOptions].map((option) => option.value);
+}
+
+function updateModeControls() {
+  const mode = $("quizMode").value;
+  const pickerWrap = $("animePickerWrap");
+  const help = {
+    single: "選擇一部作品，只考這部作品的題目。",
+    multi: "至少選擇兩部作品，題目會混合出現。",
+    all: "從目前收錄的所有戀愛動漫作品中隨機出題。",
+    comprehensive: "考跨作品角色、作品設定、配對與戀愛動漫知識。"
+  };
+  pickerWrap.classList.toggle("hidden", mode === "all" || mode === "comprehensive");
+  $("animePicker").multiple = mode !== "single";
+  $("modeHelp").textContent = help[mode];
+}
+
 async function createRoom() {
   const name = getName();
   if (!name) return toast("先幫自己取個暱稱吧！");
-  const result = await emitWithAck("createRoom", { name });
+  const mode = $("quizMode").value;
+  const selectedAnime = selectedAnimeIds();
+  const questionCount = Number($("questionCount").value);
+
+  if (!Number.isInteger(questionCount) || questionCount < 1 || questionCount > 50) {
+    return toast("每場題數請設定在 1～50 題。");
+  }
+  if (mode === "single" && selectedAnime.length !== 1) {
+    return toast("單一作品模式請選擇一部動漫。");
+  }
+  if (mode === "multi" && selectedAnime.length < 2) {
+    return toast("多作品混合模式至少選擇兩部動漫。");
+  }
+
+  const result = await emitWithAck("createRoom", {
+    name,
+    quizSettings: { mode, selectedAnime, questionCount }
+  });
   if (!result.ok) return toast(result.message);
   roomCode = result.roomCode;
   isHost = true;
@@ -75,6 +110,7 @@ function renderRoom(room) {
   roomCode = room.roomCode;
   isHost = room.hostId === socket.id;
   $("roomCodeDisplay").textContent = room.roomCode;
+  $("roomSettingsSummary").textContent = room.quizSettingsLabel || "房間題庫設定";
   $("playerCount").textContent = `${room.players.length} / 12`;
   $("playersList").innerHTML = room.players.map((player, index) => `
     <div class="player-item">
@@ -84,9 +120,7 @@ function renderRoom(room) {
   `).join("");
   $("startButton").classList.toggle("hidden", !isHost);
   $("hostHint").textContent = isHost ? "你是房主，準備好就開始吧！" : "等待房主開始遊戲...";
-  if (room.state === "lobby" && $("lobbyScreen").classList.contains("active")) {
-    showScreen("lobbyScreen");
-  }
+  if (room.state === "lobby" && $("lobbyScreen").classList.contains("active")) showScreen("lobbyScreen");
   if ($("gameScreen").classList.contains("active")) renderScoreStrip(room.players);
   if ($("finishScreen").classList.contains("active")) renderFinalRanking(room.players);
 }
@@ -105,6 +139,7 @@ function renderQuestion(data) {
   $("revealPanel").classList.add("hidden");
   $("questionNumber").textContent = `第 ${data.index} / ${data.total} 題`;
   $("progressFill").style.width = `${(data.index / data.total) * 100}%`;
+  $("questionTag").textContent = `✦ ${data.animeTitle || "綜合題目"} · ${data.category || "知識挑戰"}`;
   $("questionText").textContent = data.question;
   $("answerStatus").textContent = "選出你認為正確的答案！";
   $("answerGrid").innerHTML = data.options.map((option, index) => `
@@ -159,7 +194,7 @@ function renderReveal(data) {
   });
   $("revealHeading").textContent = "✦ 正確答案：" + letters[data.correctIndex];
   $("explanationText").textContent = data.explanation;
-  $("resultList").innerHTML = data.results
+  $("resultList").innerHTML = [...data.results]
     .sort((a, b) => b.score - a.score)
     .map((result) => `
       <div class="result-row">
@@ -197,6 +232,7 @@ async function leaveRoom() {
   showScreen("homeScreen");
 }
 
+$("quizMode").addEventListener("change", updateModeControls);
 $("createButton").addEventListener("click", createRoom);
 $("joinButton").addEventListener("click", joinRoom);
 $("roomCodeInput").addEventListener("input", (event) => {
@@ -225,6 +261,7 @@ $("restartButton").addEventListener("click", async () => {
   if (!result.ok) toast(result.message);
 });
 
+updateModeControls();
 socket.on("connect", () => setConnection(true));
 socket.on("disconnect", () => setConnection(false));
 socket.on("connect_error", () => setConnection(false));
@@ -243,3 +280,4 @@ socket.on("roomClosed", () => {
   toast("房間已結束。");
   leaveRoom();
 });
+    
