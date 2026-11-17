@@ -38,7 +38,8 @@ body {
 .hero-stats i { height: 26px; width: 1px; background: #ffffff20; }
 .panel { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 22px; box-shadow: 0 18px 50px #05051335; backdrop-filter: blur(14px); }
 .home-panel { max-width: 480px; margin: 0 auto; }
-.field-label { display: block; color: #c9c4e6; font-size: 12px; font-weight: 700; margin-bottom: 9px; }
+.field-label { display: block; color: #c9c4e6; font-size: 12px; font-weight: 700; margin: 15px 0 9px; }
+.home-panel > .field-label:first-child { margin-top: 0; }
 .text-input { width: 100%; border: 1px solid #ffffff20; outline: none; border-radius: 12px; padding: 14px 15px; color: var(--text); background: #101027b8; font: inherit; font-size: 14px; transition: .2s; }
 .text-input:focus { border-color: #a68cff; box-shadow: 0 0 0 3px #9a79ff20; }
 .text-input::placeholder { color: #777492; }
@@ -135,4 +136,17 @@ body {
   .answer-button { min-height: 52px; }
   .question-panel { padding: 20px 17px; }
   .room-code-line strong { font-size: 34px; }
+}
+
+.quiz-settings { margin-top: 18px; padding: 15px; border: 1px solid #ffffff16; border-radius: 14px; background: #ffffff06; }
+.quiz-settings .field-label { margin-top: 13px; }
+.quiz-settings .field-label:first-child { margin-top: 0; }
+.quiz-settings select.text-input { color-scheme: dark; }
+.anime-picker { min-height: 150px; padding: 8px; }
+.anime-picker option { padding: 7px 9px; border-radius: 6px; }
+.setting-help { color: var(--muted); font-size: 10px; line-height: 1.6; margin: 7px 2px 0; }
+.room-settings-summary { margin: 14px auto 0; max-width: 95%; color: #d6caff; font-size: 12px; line-height: 1.6; padding: 9px 12px; border-radius: 10px; background: #9a79ff15; }
+@media (max-width: 520px) {
+  .quiz-settings { padding: 13px; }
+  .anime-picker { min-height: 170px; }
 }
