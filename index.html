@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#101026" />
-  <meta name="description" content="和朋友一起連線挑戰動漫知識！" />
-  <title>AniQuiz｜動漫猜謎大亂鬥</title>
+  <meta name="description" content="和朋友一起連線挑戰戀愛動漫知識！" />
+  <title>AniQuiz｜戀愛動漫猜謎大亂鬥</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -25,13 +25,13 @@
   <main class="shell">
     <section class="screen active" id="homeScreen">
       <div class="hero">
-        <div class="eyebrow"><span class="sparkle">✦</span> ANIME QUIZ PARTY <span class="sparkle">✦</span></div>
-        <h1>動漫猜謎<br><span class="gradient-text">大亂鬥！</span></h1>
-        <p class="hero-copy">你是真正的動漫通嗎？<br>揪朋友連線，一起來挑戰！</p>
+        <div class="eyebrow"><span class="sparkle">✦</span> ANIME ROMANCE QUIZ PARTY <span class="sparkle">✦</span></div>
+        <h1>戀愛動漫猜謎<br><span class="gradient-text">大亂鬥！</span></h1>
+        <p class="hero-copy">近期戀愛新番、角色、劇情與跨作品冷知識。<br>揪朋友連線，一起挑戰動漫知識！</p>
         <div class="hero-stats">
           <div><strong>多人</strong><span>即時連線</span></div>
           <i></i>
-          <div><strong>10 題</strong><span>每場挑戰</span></div>
+          <div><strong>自選題數</strong><span>每場挑戰</span></div>
           <i></i>
           <div><strong>20 秒</strong><span>限時作答</span></div>
         </div>
@@ -40,6 +40,40 @@
       <div class="panel home-panel">
         <label class="field-label" for="playerName">你的暱稱</label>
         <input id="playerName" class="text-input" maxlength="16" placeholder="輸入你的動漫稱號..." autocomplete="nickname" />
+
+        <div class="quiz-settings">
+          <label class="field-label" for="quizMode">出題模式</label>
+          <select id="quizMode" class="text-input">
+            <option value="single">單一作品</option>
+            <option value="multi">多作品混合</option>
+            <option value="all">全部作品隨機</option>
+            <option value="comprehensive">綜合題目（跨作品）</option>
+          </select>
+          <p class="setting-help" id="modeHelp">選擇一部作品，只考這部作品的題目。</p>
+
+          <div id="animePickerWrap">
+            <label class="field-label" for="animePicker">選擇動漫作品</label>
+            <select id="animePicker" class="text-input anime-picker" multiple size="7">
+              <option value="blue-box">青之箱（2024）</option>
+              <option value="fragrant-flower">薰香花朵凜然綻放（2025）</option>
+              <option value="danger-in-my-heart">我內心的糟糕念頭 第二季（2024）</option>
+              <option value="sign-of-affection">指尖相觸，戀戀不捨（2024）</option>
+              <option value="kimi-ni-todoke">只想告訴你 第三季（2024）</option>
+              <option value="365-days">結婚するって、本当ですか（2024）</option>
+              <option value="amagami-sisters">結緣甘神神社（2024）</option>
+              <option value="falling-in-love">Anyway, I'm Falling in Love with You（2025）</option>
+              <option value="polar-opposites">相反的你和我（2026）</option>
+              <option value="tamon">多聞君今どっち！？（2026）</option>
+              <option value="moonlit-dusk">黃昏光影／うるわしの宵の月（2026）</option>
+            </select>
+            <p class="setting-help">手機可點選作品；多作品模式可複選。</p>
+          </div>
+
+          <label class="field-label" for="questionCount">每場題數（5～50）</label>
+          <input id="questionCount" class="text-input" type="number" min="1" max="50" value="10" />
+          <p class="setting-help">若所選題庫題數不足，會自動使用該題庫目前可用的題目數。</p>
+        </div>
+
         <button class="primary-button full-button" id="createButton"><span>✦</span> 建立遊戲房間</button>
         <div class="or-divider"><span>或加入朋友的房間</span></div>
         <div class="join-row">
@@ -48,7 +82,7 @@
         </div>
         <p class="small-note">最多 12 位玩家・每答對一題得 10 分</p>
       </div>
-      <div class="footer-note">由動漫魂燃燒的每一刻開始 ✨</div>
+      <div class="footer-note">由戀愛動漫魂燃燒的每一刻開始 ✨</div>
     </section>
 
     <section class="screen" id="lobbyScreen">
@@ -61,6 +95,7 @@
         <span class="field-label">你的房間代碼</span>
         <div class="room-code-line"><strong id="roomCodeDisplay">----</strong><button class="copy-button" id="copyCodeButton" title="複製房號">複製</button></div>
         <span class="small-note">朋友輸入這組代碼就能加入</span>
+        <div class="room-settings-summary" id="roomSettingsSummary">題庫設定載入中...</div>
       </div>
       <div class="panel players-panel">
         <div class="panel-title-row"><h3>玩家列表</h3><span class="player-count" id="playerCount">0 / 12</span></div>
@@ -80,7 +115,7 @@
       </div>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
       <div class="panel question-panel">
-        <div class="question-tag">✦ 本題挑戰</div>
+        <div class="question-tag" id="questionTag">✦ 本題挑戰</div>
         <h2 id="questionText">題目載入中...</h2>
         <div class="answer-grid" id="answerGrid"></div>
         <div class="answer-status" id="answerStatus">選出你認為正確的答案！</div>
@@ -121,73 +156,3 @@
   <script src="/app.js"></script>
 </body>
 </html>
-A! AniQuiz
-連線中...
-✦ ANIME ROMANCE QUIZ PARTY ✦
-戀愛動漫猜謎
-大亂鬥！
-近期戀愛新番、角色、劇情與跨作品冷知識。
-揪朋友連線，一起挑戰動漫知識！
-
-多人即時連線
-自選題數每場挑戰
-20 秒限時作答
-你的暱稱 
-輸入你的動漫稱號...
-出題模式 
-單一作品
-選擇一部作品，只考這部作品的題目。
-
-選擇動漫作品 青之箱（2024）薰香花朵凜然綻放（2025）我內心的糟糕念頭 第二季（2024）指尖相觸，戀戀不捨（2024）只想告訴你 第三季（2024）結婚するって、本当ですか（2024）結緣甘神神社（2024）Anyway, I'm Falling in Love with You（2025）相反的你和我（2026）多聞君今どっち！？（2026）黃昏光影／うるわしの宵の月（2026）
-手機可點選作品；多作品模式可複選。
-
-每場題數（5～50） 
-10
-若所選題庫題數不足，會自動使用該題庫目前可用的題目數。
-
-✦ 建立遊戲房間
-或加入朋友的房間
-輸入 4 位房號
- 加入房間
-最多 12 位玩家・每答對一題得 10 分
-
-由戀愛動漫魂燃燒的每一刻開始 ✨
-WAITING ROOM
-玩家集合中.
-把房號分享給朋友，等大家到齊就出發！
-
-你的房間代碼
-----複製
-朋友輸入這組代碼就能加入
-題庫設定載入中...
-玩家列表
-0 / 12
-開始猜謎 → 離開房間
-只有房主可以開始遊戲
-
-ANIME BATTLE
-第 1 / 10 題
-20
-剩餘秒數
-✦ 本題挑戰
-題目載入中...
-選出你認為正確的答案！
-即時戰況
-0 人已作答
-答案揭曉！
-本題結果
-答對 +10 分
-下一題 →
-等待房主進入下一題...
-
-🏆
-GAME COMPLETED
-猜謎挑戰
-結束！
-動漫知識王就是你嗎？
-
-最終排行榜
-再玩一場 ↻
-等待房主重新開始...
-
-離開房間
