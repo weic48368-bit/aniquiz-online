@@ -365,3 +365,16 @@ io.on("connection", (socket) => {
     emitRoom(room);
     if (room.state === "playing" && room.phase === "question" && room.answers.size >= room.players.size) {
       revealAn
+swer(room);
+    }
+  }
+
+  socket.on("disconnect", () => {
+    const room = [...rooms.values()].find((item) => item.players.has(socket.id));
+    if (room) removePlayer(room, socket.id);
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`AniQuiz server running on port ${PORT}`);
+});
