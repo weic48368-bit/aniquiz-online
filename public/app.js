@@ -46,11 +46,45 @@ function getName() {
   return $("playerName").value.trim().slice(0, 16);
 }
 
+function getQuizSettings() {
+  const mode = $("quizMode").value;
+  const selectedAnime = [...$("animePicker").selectedOptions]
+    .map(option => option.value);
+
+  const questionCount = Number.parseInt($("questionCount").value, 10);
+
+  if (mode === "single" && selectedAnime.length !== 1) {
+    toast("單一作品模式請選擇一部動漫。");
+    return null;
+  }
+
+  if (mode === "multi" && selectedAnime.length < 2) {
+    toast("多作品混合模式至少選擇兩部動漫。");
+    return null;
+  }
+
+  if (!Number.isInteger(questionCount) || questionCount < 1 || questionCount > 50) {
+    toast("題數請設定為 1～50 題。");
+    return null;
+  }
+
+  return { mode, selectedAnime, questionCount };
+}
+
 async function createRoom() {
   const name = getName();
   if (!name) return toast("先幫自己取個暱稱吧！");
-  const result = await emitWithAck("createRoom", { name });
+
+  const quizSettings = getQuizSettings();
+  if (!quizSettings) return;
+
+  const result = await emitWithAck("createRoom", {
+    name,
+    quizSettings
+  });
+
   if (!result.ok) return toast(result.message);
+
   roomCode = result.roomCode;
   isHost = true;
   $("roomCodeDisplay").textContent = roomCode;
