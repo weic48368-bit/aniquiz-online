@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101026" />
+  <meta name="description" content="和朋友一起連線挑戰動漫知識！" />
+  <title>AniQuiz｜動漫猜謎大亂鬥</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="AniQuiz 首頁">
+      <span class="brand-mark">A!</span>
+      <span>Ani<span class="brand-accent">Quiz</span></span>
+    </a>
+    <div class="connection"><span class="connection-dot" id="connectionDot"></span><span id="connectionText">連線中...</span></div>
+  </header>
+
+  <main class="shell">
+    <section class="screen active" id="homeScreen">
+      <div class="hero">
+        <div class="eyebrow"><span class="sparkle">✦</span> ANIME QUIZ PARTY <span class="sparkle">✦</span></div>
+        <h1>動漫猜謎<br><span class="gradient-text">大亂鬥！</span></h1>
+        <p class="hero-copy">你是真正的動漫通嗎？<br>揪朋友連線，一起來挑戰！</p>
+        <div class="hero-stats">
+          <div><strong>多人</strong><span>即時連線</span></div>
+          <i></i>
+          <div><strong>10 題</strong><span>每場挑戰</span></div>
+          <i></i>
+          <div><strong>20 秒</strong><span>限時作答</span></div>
+        </div>
+      </div>
+
+      <div class="panel home-panel">
+        <label class="field-label" for="playerName">你的暱稱</label>
+        <input id="playerName" class="text-input" maxlength="16" placeholder="輸入你的動漫稱號..." autocomplete="nickname" />
+        <button class="primary-button full-button" id="createButton"><span>✦</span> 建立遊戲房間</button>
+        <div class="or-divider"><span>或加入朋友的房間</span></div>
+        <div class="join-row">
+          <input id="roomCodeInput" class="text-input code-input" maxlength="4" placeholder="輸入 4 位房號" />
+          <button class="secondary-button" id="joinButton">加入房間</button>
+        </div>
+        <p class="small-note">最多 12 位玩家・每答對一題得 10 分</p>
+      </div>
+      <div class="footer-note">由動漫魂燃燒的每一刻開始 ✨</div>
+    </section>
+
+    <section class="screen" id="lobbyScreen">
+      <div class="section-heading">
+        <div class="eyebrow">WAITING ROOM</div>
+        <h2>玩家集合中<span class="heading-dot">.</span></h2>
+        <p>把房號分享給朋友，等大家到齊就出發！</p>
+      </div>
+      <div class="panel room-code-panel">
+        <span class="field-label">你的房間代碼</span>
+        <div class="room-code-line"><strong id="roomCodeDisplay">----</strong><button class="copy-button" id="copyCodeButton" title="複製房號">複製</button></div>
+        <span class="small-note">朋友輸入這組代碼就能加入</span>
+      </div>
+      <div class="panel players-panel">
+        <div class="panel-title-row"><h3>玩家列表</h3><span class="player-count" id="playerCount">0 / 12</span></div>
+        <div class="players-list" id="playersList"></div>
+      </div>
+      <div class="lobby-actions">
+        <button class="primary-button full-button" id="startButton">開始猜謎 <span>→</span></button>
+        <button class="text-button" id="leaveButton">離開房間</button>
+      </div>
+      <p class="host-hint" id="hostHint">只有房主可以開始遊戲</p>
+    </section>
+
+    <section class="screen" id="gameScreen">
+      <div class="game-topline">
+        <div><span class="eyebrow">ANIME BATTLE</span><div class="question-number" id="questionNumber">第 1 / 10 題</div></div>
+        <div class="timer-wrap"><div class="timer-ring" id="timerRing"><strong id="timerValue">20</strong></div><span>剩餘秒數</span></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="panel question-panel">
+        <div class="question-tag">✦ 本題挑戰</div>
+        <h2 id="questionText">題目載入中...</h2>
+        <div class="answer-grid" id="answerGrid"></div>
+        <div class="answer-status" id="answerStatus">選出你認為正確的答案！</div>
+      </div>
+      <div class="panel mini-score-panel">
+        <div class="panel-title-row"><h3>即時戰況</h3><span class="small-note" id="answerProgress">0 人已作答</span></div>
+        <div class="score-strip" id="scoreStrip"></div>
+      </div>
+      <div class="panel reveal-panel hidden" id="revealPanel">
+        <div class="reveal-heading" id="revealHeading">答案揭曉！</div>
+        <p id="explanationText"></p>
+        <div class="panel-title-row result-title"><h3>本題結果</h3><span class="small-note">答對 +10 分</span></div>
+        <div class="result-list" id="resultList"></div>
+        <button class="primary-button full-button hidden" id="nextButton">下一題 <span>→</span></button>
+        <p class="host-hint hidden" id="waitHostHint">等待房主進入下一題...</p>
+      </div>
+    </section>
+
+    <section class="screen" id="finishScreen">
+      <div class="finish-hero">
+        <div class="finish-icon">🏆</div>
+        <div class="eyebrow">GAME COMPLETED</div>
+        <h2>猜謎挑戰<br><span class="gradient-text">結束！</span></h2>
+        <p>動漫知識王就是你嗎？</p>
+      </div>
+      <div class="panel final-score-panel">
+        <h3>最終排行榜</h3>
+        <div id="finalRanking" class="final-ranking"></div>
+        <button class="primary-button full-button hidden" id="restartButton">再玩一場 <span>↻</span></button>
+        <p class="host-hint hidden" id="finishWaitHint">等待房主重新開始...</p>
+      </div>
+      <button class="text-button" id="finishLeaveButton">離開房間</button>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
