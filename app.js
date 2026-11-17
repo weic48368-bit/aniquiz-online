@@ -280,4 +280,3 @@ socket.on("roomClosed", () => {
   toast("房間已結束。");
   leaveRoom();
 });
-    
